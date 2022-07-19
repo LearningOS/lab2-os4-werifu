@@ -66,6 +66,18 @@ impl MemorySet {
         }
         self.areas.push(map_area);
     }
+
+    /// Unmap
+    pub fn munmap(&mut self, vpn_range: VPNRange) {
+        for vpn in vpn_range.into_iter() {
+            if let Some(area) = self.areas.iter_mut().find(|area| {
+                let area_range = area.vpn_range;
+                vpn.0 >= area_range.get_start().0 && vpn.0 < area_range.get_end().0
+            }) {
+                area.unmap_one(&mut self.page_table, vpn);
+            }
+        }
+    }
     /// Mention that trampoline is not collected by areas.
     fn map_trampoline(&mut self) {
         self.page_table.map(

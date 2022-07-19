@@ -88,6 +88,13 @@ impl From<VirtPageNum> for usize {
     }
 }
 
+// new physical address from ppn+offset
+impl PhysAddr {
+    pub fn combine(ppn: PhysPageNum, offset: usize) -> Self {
+        PhysAddr(PhysAddr::from(ppn).0 | (offset & (PAGE_SIZE - 1)))
+    }
+}
+
 impl VirtAddr {
     pub fn floor(&self) -> VirtPageNum {
         VirtPageNum(self.0 / PAGE_SIZE)
